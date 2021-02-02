@@ -64,6 +64,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Calculator',
                     icon: "calculator",
                     app: Calculator(),
+                    color: Colors.green,
                     packageName: 'io.dahlia.calculator'),
               ),
               PinnedTaskBarItem(
@@ -71,6 +72,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Notes',
                     icon: "notes",
                     app: TextEditorApp(),
+                    color: Colors.amber[700],
                     packageName: 'io.dahlia.notes'),
               ),
               PinnedTaskBarItem(
@@ -78,6 +80,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Terminal',
                     icon: "terminal",
                     app: TerminalApp(),
+                    color: Colors.grey[900],
                     packageName: 'io.dahlia.terminal'),
               ),
               PinnedTaskBarItem(
@@ -85,6 +88,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Files',
                     icon: "files",
                     app: Files(),
+                    color: Colors.deepOrange[800],
                     packageName: 'io.dahlia.files'),
               ),
               PinnedTaskBarItem(
@@ -92,6 +96,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Task Manager',
                     icon: "task",
                     app: Tasks(),
+                    color: Colors.cyan[900],
                     packageName: 'io.dahlia.taskmanager'),
               ),
               PinnedTaskBarItem(
@@ -99,6 +104,7 @@ class _TaskbarState extends State<Taskbar> with SingleTickerProviderStateMixin {
                     appName: 'Settings',
                     icon: "settings",
                     app: Settings(),
+                    color: Colors.deepOrange[700],
                     packageName: 'io.dahlia.settings'),
               ),
             ]

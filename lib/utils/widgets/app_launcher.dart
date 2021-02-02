@@ -169,7 +169,7 @@ class PinnedTaskBarItem extends StatelessWidget {
                 ".png"),
             title: applicationData.appName,
             toolbarColor: HiveManager.get("coloredTitlebar")
-                ? applicationData.color ?? Colors.green
+                ? applicationData.color ?? Colors.grey[900]
                 : Colors.grey[900],
           ),
         );

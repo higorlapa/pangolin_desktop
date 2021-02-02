@@ -59,6 +59,7 @@ Expanded tileSection(BuildContext context) {
                 appExists: e.appExists,
                 callback: toggleCallback,
                 color: e.color,
+                packageName: '',
               ),
             )
             .toList(),
