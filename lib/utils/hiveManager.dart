@@ -89,3 +89,5 @@ List<String> wallpapers = [
   "assets/images/wallpapers/dahliaOS/Mountains_wallpaper.png",
   "assets/images/wallpapers/Nature/mountain.jpg",
 ];
+
+List<String> pinnedApps = List.empty(growable: true);

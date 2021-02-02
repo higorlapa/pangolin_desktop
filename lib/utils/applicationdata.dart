@@ -31,23 +31,26 @@ import 'package:Pangolin/utils/widgets/app_launcher.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationData {
-  final String appName, icon;
+  final String appName, icon, packageName;
   final Widget app;
   final bool appExists;
   final Color color;
 
   const ApplicationData(
       {Key key,
+      @required this.packageName,
       @required this.appName,
       //only need the file name of the image, path and file type are already defined
       @required this.icon,
       this.app,
       this.color,
-      @required this.appExists});
+      this.appExists = true});
 }
 
-List<ApplicationData> applicationsData = List<ApplicationData>();
-List<AppLauncherButton> applications = List<AppLauncherButton>();
+List<ApplicationData> applicationsData =
+    List<ApplicationData>.empty(growable: true);
+List<AppLauncherButton> applications =
+    List<AppLauncherButton>.empty(growable: true);
 void initializeApps() {
   //clear ApplicationData
   applicationsData.clear();
@@ -56,6 +59,7 @@ void initializeApps() {
 
   //Terminal
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.terminal",
       appName: LocaleStrings.pangolin.appTerminal,
       icon: "terminal",
       app: TerminalApp(),
@@ -64,6 +68,7 @@ void initializeApps() {
 
   //Tasks
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.taskmanager",
       appName: LocaleStrings.pangolin.appTaskmanager,
       icon: "task",
       app: Tasks(),
@@ -72,7 +77,8 @@ void initializeApps() {
 
   //Settings
   applicationsData.add(ApplicationData(
-      appName: "Settings",
+      packageName: "io.dahlia.settings",
+      appName: LocaleStrings.pangolin.appSettings,
       icon: "settings",
       app: Settings(),
       color: Colors.deepOrange[700],
@@ -80,6 +86,7 @@ void initializeApps() {
 
   //Root Terminal
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.rootterminal",
       appName: LocaleStrings.pangolin.appRootterminal,
       icon: "root",
       app: RootTerminal(),
@@ -88,6 +95,7 @@ void initializeApps() {
 
   //Text Editor
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.notes",
       appName: LocaleStrings.pangolin.appNotes,
       icon: "notes",
       app: TextEditorApp(),
@@ -96,12 +104,14 @@ void initializeApps() {
 
   //Notes Mobile
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.notesmobile",
       appName: LocaleStrings.pangolin.appNotesmobile,
       icon: "note_mobile",
       appExists: false));
 
   //Logs
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.systemlogs",
       appName: LocaleStrings.pangolin.appSystemlogs,
       icon: "logs",
       app: Logs(),
@@ -110,6 +120,7 @@ void initializeApps() {
 
   //Files
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.files",
       appName: LocaleStrings.pangolin.appFiles,
       icon: "files",
       app: Files(),
@@ -118,20 +129,23 @@ void initializeApps() {
 
   //Disks
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.disks",
       appName: LocaleStrings.pangolin.appDisks,
       icon: "disks",
       appExists: false));
 
   //Calculator
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.calculator",
       appName: LocaleStrings.pangolin.appCalculator,
       icon: "calculator",
       app: Calculator(),
       color: Colors.green,
       appExists: true));
 
-  //Tasks
+  //Graft
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.containers",
       appName: LocaleStrings.pangolin.appContainers,
       icon: "graft",
       app: Graft(),
@@ -140,6 +154,7 @@ void initializeApps() {
 
   //Welcome
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.welcome",
       appName: LocaleStrings.pangolin.appWelcome,
       icon: "welcome-info",
       app: Welcome(),
@@ -149,6 +164,7 @@ void initializeApps() {
   //Developer Options
   if (HiveManager.get("developeroptions") == true) {
     applicationsData.add(ApplicationData(
+        packageName: "io.dahlia.developeroptions",
         appName: LocaleStrings.pangolin.appDeveloperoptions,
         icon: "developer",
         app: DeveloperApp(),
@@ -158,6 +174,7 @@ void initializeApps() {
 
   //Web
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.web",
       appName: LocaleStrings.pangolin.appWeb,
       icon: "web",
       app: BrowserApp(),
@@ -166,6 +183,7 @@ void initializeApps() {
 
   //Clock
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.clock",
       appName: LocaleStrings.pangolin.appClock,
       icon: "clock",
       app: Clock(),
@@ -174,24 +192,28 @@ void initializeApps() {
 
   //Messages
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.messages",
       appName: LocaleStrings.pangolin.appMessages,
       icon: "messages",
       appExists: false));
 
   //Music
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.music",
       appName: LocaleStrings.pangolin.appMusic,
       icon: "music",
       appExists: false));
 
   //Photos
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.media",
       appName: LocaleStrings.pangolin.appMedia,
       icon: "photos",
       appExists: false));
 
   //Theme Demo
   applicationsData.add(ApplicationData(
+      packageName: "io.dahlia.themedemo",
       appName: "Theme Demo",
       icon: "theme",
       app: ThemeDemoApp(),
@@ -200,5 +222,8 @@ void initializeApps() {
 
   //Help
   applicationsData.add(ApplicationData(
-      appName: LocaleStrings.pangolin.appHelp, icon: "help", appExists: false));
+      packageName: "io.dahlia.help",
+      appName: LocaleStrings.pangolin.appHelp,
+      icon: "help",
+      appExists: false));
 }

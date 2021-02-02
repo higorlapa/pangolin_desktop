@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import 'dart:ui';
+import 'package:Pangolin/utils/applicationdata.dart';
 import 'package:Pangolin/utils/hiveManager.dart';
 import 'package:Pangolin/utils/widgets/hover.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +32,13 @@ class AppLauncherButton extends StatefulWidget {
   final double childWidth;
   final String label;
   final Color color;
+  final String packageName;
   final ValueChanged<bool> _callback;
 
   AppLauncherButton({
     @required this.app,
     @required this.icon,
+    @required this.packageName,
     this.label,
     this.appExists = true,
     this.customBar = true,
@@ -62,82 +65,82 @@ class AppLauncherButtonState extends State<AppLauncherButton> {
         width: 128,
         height: 128,
         child: Hover(
-          cursor: SystemMouseCursors.click,
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(6),
-          onTap: () {
-            setState(() {
-              toggled = !_toggled;
-              widget._callback?.call(_toggled);
-            });
+            cursor: SystemMouseCursors.click,
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(6),
+            onTap: () {
+              setState(() {
+                toggled = !_toggled;
+                widget._callback?.call(_toggled);
+              });
 
-            widget.appExists
-                ? Provider.of<WindowHierarchyState>(context, listen: false)
-                    .pushWindowEntry(
-                    WindowEntry.withDefaultToolbar(
-                      content: widget.app,
-                      icon: AssetImage(widget.icon),
-                      title: widget.label,
-                      toolbarColor: HiveManager.get("coloredTitlebar")
-                          ? widget.color
-                          : Colors.grey[900],
-                    ),
-                  )
-                : showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      // return object of type Dialog
-                      return AlertDialog(
-                        title: new Text("Feature not implemented"),
-                        content: new Text(
-                            "This feature is currently not available on your build of Pangolin. Please see https://reddit.com/r/dahliaos to check for updates."),
-                        actions: <Widget>[
-                          // usually buttons at the bottom of the dialog
-                          new FlatButton(
-                            child: new Text("OK"),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-          },
-          child: Container(
-            width: 200,
-            height: 200,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Opacity(
-                  opacity: widget.appExists ? 1.0 : 0.4,
-                  child: Container(
-                    child: Image.asset(
-                      widget.icon,
-                      fit: BoxFit.contain,
-                      width: 64,
-                      height: 64,
+              widget.appExists
+                  ? Provider.of<WindowHierarchyState>(context, listen: false)
+                      .pushWindowEntry(
+                      WindowEntry.withDefaultToolbar(
+                        content: widget.app,
+                        icon: AssetImage(widget.icon),
+                        title: widget.label,
+                        toolbarColor: HiveManager.get("coloredTitlebar")
+                            ? widget.color
+                            : Colors.grey[900],
+                      ),
+                    )
+                  : showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        // return object of type Dialog
+                        return AlertDialog(
+                          title: new Text("Feature not implemented"),
+                          content: new Text(
+                              "This feature is currently not available on your build of Pangolin. Please see https://reddit.com/r/dahliaos to check for updates."),
+                          actions: <Widget>[
+                            // usually buttons at the bottom of the dialog
+                            new FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+            },
+            child: Container(
+              width: 200,
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Opacity(
+                    opacity: widget.appExists ? 1.0 : 0.4,
+                    child: Container(
+                      child: Image.asset(
+                        widget.icon,
+                        fit: BoxFit.contain,
+                        width: 64,
+                        height: 64,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    widget.label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: widget.appExists ? Colors.white : Colors.grey[400],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      widget.label,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color:
+                            widget.appExists ? Colors.white : Colors.grey[400],
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              ),
+            )),
       ),
     );
   }
@@ -146,5 +149,36 @@ class AppLauncherButtonState extends State<AppLauncherButton> {
     if (value == _toggled) {
       return;
     }
+  }
+}
+
+class PinnedTaskBarItem extends StatelessWidget {
+  final ApplicationData applicationData;
+  const PinnedTaskBarItem({this.applicationData});
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      onTap: () {
+        Provider.of<WindowHierarchyState>(context, listen: false)
+            .pushWindowEntry(
+          WindowEntry.withDefaultToolbar(
+            content: applicationData.app,
+            icon: AssetImage("assets/images/icons/PNG/" +
+                this.applicationData.icon +
+                ".png"),
+            title: applicationData.appName,
+            toolbarColor: HiveManager.get("coloredTitlebar")
+                ? applicationData.color ?? Colors.green
+                : Colors.grey[900],
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Image.asset(
+            "assets/images/icons/PNG/" + this.applicationData.icon + ".png"),
+      ),
+    );
   }
 }
