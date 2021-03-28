@@ -10,8 +10,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import 'package:flutter/material.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(new WirelessApp());
@@ -38,13 +39,13 @@ void submitNetwork(String id, String cred) {
 }
 
 class WirelessHomePage extends StatefulWidget {
-  WirelessHomePage({Key key}) : super(key: key);
+  WirelessHomePage({Key? key}) : super(key: key);
   @override
   _WirelessHomePageState createState() => new _WirelessHomePageState();
 }
 
-String id;
-String cred;
+String? id;
+String? cred;
 
 class _WirelessHomePageState extends State<WirelessHomePage> {
   /// This is the private State class that goes with MyStatefulWidget
@@ -65,7 +66,7 @@ class _WirelessHomePageState extends State<WirelessHomePage> {
                       hintText: 'SSID',
                     ),
                     validator: (ssid) {
-                      if (ssid.isEmpty) {
+                      if (ssid?.isEmpty ?? true) {
                         return 'Please enter the network\'s SSID';
                       } else {
                         id = ssid;
@@ -80,7 +81,7 @@ class _WirelessHomePageState extends State<WirelessHomePage> {
                       hintText: 'Password',
                     ),
                     validator: (password) {
-                      if (password.isEmpty) {
+                      if (password?.isEmpty ?? true) {
                         return 'Please enter the network\'s password';
                       } else {
                         cred = password;
@@ -96,8 +97,8 @@ class _WirelessHomePageState extends State<WirelessHomePage> {
                       onPressed: () {
                         // Validate will return true if the form is valid, or false if
                         // the form is invalid.
-                        if (_formKey.currentState.validate()) {
-                          submitNetwork(id, cred);
+                        if (_formKey.currentState?.validate() ?? false) {
+                          submitNetwork(id ?? "", cred ?? "");
                           final snackBar = SnackBar(
                             behavior: SnackBarBehavior.floating,
                             content: Text('Network configured'),

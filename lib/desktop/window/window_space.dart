@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:Pangolin/desktop/window/model.dart';
 import 'package:Pangolin/desktop/window/window.dart';
+import 'package:flutter/material.dart';
+//import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 /// Displays a set of windows.
@@ -28,7 +28,7 @@ class WindowPlaygroundWidget extends StatefulWidget {
 }
 
 class _PlaygroundState extends State<WindowPlaygroundWidget> {
-  WindowsData _windows;
+  WindowsData? _windows;
 //    ..add(
 //      color: Colors.green[700],
 //      child: Calculator(),
@@ -61,7 +61,7 @@ class _PlaygroundState extends State<WindowPlaygroundWidget> {
   final FocusScopeNode _focusNode = FocusScopeNode();
 
   /// Currently highlighted window when paging through windows.
-  WindowId _highlightedWindow;
+  WindowId? _highlightedWindow;
 
   /*@override
   void initState() {
@@ -107,7 +107,7 @@ class _PlaygroundState extends State<WindowPlaygroundWidget> {
   List<Widget> _buildWindows(
       WindowsData model, double maxWidth, double maxHeight) {
     // Remove keys that are no longer useful.
-    List<WindowId> obsoleteIds = List<WindowId>();
+    List<WindowId> obsoleteIds = <WindowId>[];
     _windowKeys.keys.forEach((WindowId id) {
       if (!model.windows.any((WindowData window) => window.id == id)) {
         obsoleteIds.add(id);
@@ -118,7 +118,7 @@ class _PlaygroundState extends State<WindowPlaygroundWidget> {
     // Adjust window order if there's a highlighted window.
     final List<WindowData> windows = List<WindowData>.from(model.windows);
     if (_highlightedWindow != null) {
-      final WindowData window = model.find(_highlightedWindow);
+      final WindowData? window = model.find(_highlightedWindow!);
       if (window != null) {
         windows.remove(window);
         windows.add(window);
@@ -137,7 +137,7 @@ class _PlaygroundState extends State<WindowPlaygroundWidget> {
                 initialSize: Size(maxWidth / 2, maxHeight / 2),
                 onWindowInteraction: () => model.moveToFront(window),
                 onWindowClose: () => model.close(window),
-                color: window.color,
+                color: window.color ?? Colors.black,
                 child: window.child,
               ),
             ))
@@ -160,11 +160,11 @@ class _PlaygroundState extends State<WindowPlaygroundWidget> {
                   node: _focusNode,
                   autofocus: true,
                   child: ScopedModel<WindowsData>(
-                    model: _windows,
+                    model: _windows!,
                     child: ScopedModelDescendant<WindowsData>(
                       builder: (
                         BuildContext context,
-                        Widget child,
+                        Widget? child,
                         WindowsData model,
                       ) =>
                           Stack(

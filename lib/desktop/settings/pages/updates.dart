@@ -11,13 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import 'package:Pangolin/utils/widgets/settingsTile.dart';
-
-import 'dart:ui';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
-import 'dart:async';
+import 'dart:ui';
+
+import 'package:Pangolin/utils/widgets/settingsTile.dart';
+import 'package:flutter/material.dart';
 
 class GraftForm extends StatefulWidget {
   @override
@@ -34,7 +32,7 @@ class GraftFormState extends State<GraftForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<GraftFormState>.
-  String pkgurl;
+  String? pkgurl;
   bool updates = true;
   bool extPkgs = false;
   final _formKey = GlobalKey<FormState>();
@@ -88,7 +86,7 @@ class GraftFormState extends State<GraftForm> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.storage)),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value?.isEmpty ?? true) {
                 return 'The package can\'t be empty';
               }
 
@@ -103,40 +101,40 @@ class GraftFormState extends State<GraftForm> {
                 // Validate returns true if the form is valid, or false
                 // otherwise.
 
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState?.validate() ?? false) {
                   //check if URL is allowed here
                   if (updates == true) {
-                    if (extPkgs == false && pkgurl.length < 20) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                    if (extPkgs == false && (pkgurl?.length ?? 0) < 20) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           backgroundColor: Colors.red,
                           duration: Duration(seconds: 3),
                           content: Text('That update source isn\'t trusted')));
                     }
                     if (extPkgs == false &&
-                        pkgurl.substring(0, 20) != "https://dahliaos.io/") {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                        pkgurl?.substring(0, 20) != "https://dahliaos.io/") {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           backgroundColor: Colors.red,
                           duration: Duration(seconds: 3),
                           content: Text('That update source isn\'t trusted')));
                     }
                     if (extPkgs == true) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 3),
                           content: Text('Update initialized')));
-                      Process.start('external-updater', [pkgurl],
+                      Process.start('external-updater', [pkgurl ?? ""],
                           mode: ProcessStartMode.detached);
                     }
 
                     if (extPkgs == false &&
-                        pkgurl.substring(0, 20) == "https://dahliaos.io/") {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                        pkgurl?.substring(0, 20) == "https://dahliaos.io/") {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 3),
                           content: Text('Update initialized')));
-                      Process.start('external-updater', [pkgurl],
+                      Process.start('external-updater', [pkgurl ?? ""],
                           mode: ProcessStartMode.detached);
                     }
                   } else if (updates == false) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         duration: Duration(seconds: 3),
                         content: Text('Software updates are disabled')));
                   }

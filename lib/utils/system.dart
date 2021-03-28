@@ -10,17 +10,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import 'package:flutter/material.dart';
-import 'dart:io';
-import 'dart:io' show Platform;
-import 'package:path/path.dart' as path;
+import 'dart:async' show Future;
 import 'dart:convert';
 import 'dart:core';
-import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io';
+import 'dart:io' show Platform;
+
+import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 
 class Configuration {
-  String theme;
+  String? theme;
 
   Configuration({
     this.theme,
@@ -34,7 +34,7 @@ class Configuration {
 }
 
 Future<String> _loadConfigAsset() async {
-  return await File(path.join(Platform.environment['HOME'], 'system.json'))
+  return File(path.join(Platform.environment['HOME']!, 'system.json'))
       .readAsStringSync();
 }
 
@@ -43,7 +43,7 @@ Future<String> loadConfig() async {
   final jsonResponse = json.decode(jsonString);
   Configuration config = new Configuration.fromJson(jsonResponse);
   print(config.theme);
-  String value = config.theme;
+  String value = config.theme ?? "";
   return value;
 }
 

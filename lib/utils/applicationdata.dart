@@ -14,6 +14,7 @@ limitations under the License.
 import 'package:Pangolin/applications/browser/main.dart';
 import 'package:Pangolin/applications/calculator/calculator.dart';
 import 'package:Pangolin/applications/clock/main.dart';
+import 'package:Pangolin/applications/demo/main.dart';
 import 'package:Pangolin/applications/developer/developer.dart';
 import 'package:Pangolin/applications/editor/editor.dart';
 import 'package:Pangolin/applications/files/main.dart';
@@ -23,7 +24,6 @@ import 'package:Pangolin/applications/monitor/monitor.dart';
 import 'package:Pangolin/applications/terminal/main.dart';
 import 'package:Pangolin/applications/terminal/root/main.dart';
 import 'package:Pangolin/applications/welcome/welcome.dart';
-import 'package:Pangolin/applications/demo/main.dart';
 import 'package:Pangolin/desktop/settings/settings.dart';
 import 'package:Pangolin/internal/locales/locale_strings.g.dart';
 import 'package:Pangolin/utils/hiveManager.dart';
@@ -32,22 +32,22 @@ import 'package:flutter/material.dart';
 
 class ApplicationData {
   final String appName, icon;
-  final Widget app;
+  final Widget? app;
   final bool appExists;
-  final Color color;
+  final Color? color;
 
   const ApplicationData(
-      {Key key,
-      @required this.appName,
+      {Key? key,
+      required this.appName,
       //only need the file name of the image, path and file type are already defined
-      @required this.icon,
+      required this.icon,
       this.app,
       this.color,
-      @required this.appExists});
+      required this.appExists});
 }
 
-List<ApplicationData> applicationsData = List<ApplicationData>();
-List<AppLauncherButton> applications = List<AppLauncherButton>();
+List<ApplicationData> applicationsData = <ApplicationData>[];
+List<AppLauncherButton> applications = <AppLauncherButton>[];
 void initializeApps() {
   //clear ApplicationData
   applicationsData.clear();

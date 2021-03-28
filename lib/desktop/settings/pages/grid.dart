@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SettingsHome extends StatefulWidget {
-  const SettingsHome({Key key}) : super(key: key);
+  const SettingsHome({Key? key}) : super(key: key);
 
   @override
   _SettingsHomeState createState() => _SettingsHomeState();
@@ -56,7 +56,7 @@ class _SettingsHomeState extends State<SettingsHome> {
                                     hintStyle: TextStyle(
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodyText1
+                                          .bodyText1!
                                           .color,
                                       fontSize: 15,
                                     ),

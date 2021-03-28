@@ -17,9 +17,9 @@ limitations under the License.
 import 'dart:ui';
 
 import 'package:Pangolin/utils/widgets/hover.dart';
+import 'package:flutter/material.dart';
 
 import 'searchbar.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(new Messages());
@@ -121,9 +121,9 @@ class Folder extends StatelessWidget {
 
   const Folder({
     Key key,
-    @required this.icon,
-    @required this.label,
-    @required this.onClick,
+    required this.icon,
+    required this.label,
+    required this.onClick,
   }) : super(key: key);
 
   @override

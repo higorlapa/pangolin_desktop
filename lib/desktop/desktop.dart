@@ -3,33 +3,30 @@ import 'dart:ui';
 
 import 'package:Pangolin/applications/calculator/calculator.dart';
 import 'package:Pangolin/applications/editor/editor.dart';
-import 'package:Pangolin/applications/terminal/main.dart';
+import 'package:Pangolin/applications/files/main.dart';
 import 'package:Pangolin/applications/monitor/monitor.dart';
+import 'package:Pangolin/applications/terminal/main.dart';
+import 'package:Pangolin/desktop/launcher/launcher.dart';
+import 'package:Pangolin/desktop/launcher/launcher_toggle.dart';
+import 'package:Pangolin/desktop/quicksettings/quick_settings.dart';
+import 'package:Pangolin/desktop/quicksettings/status_tray.dart';
 import 'package:Pangolin/desktop/settings/settings.dart';
-import 'package:Pangolin/main.dart';
-import 'package:Pangolin/utils/others/key_ring.dart';
 import 'package:Pangolin/desktop/window/window_space.dart';
+import 'package:Pangolin/main.dart';
 import 'package:Pangolin/utils/hiveManager.dart';
+import 'package:Pangolin/utils/others/functions.dart';
+import 'package:Pangolin/utils/others/key_ring.dart';
 import 'package:Pangolin/utils/themes/customization_manager.dart';
+import 'package:Pangolin/utils/widgets/app_launcher.dart';
 import 'package:Pangolin/utils/widgets/blur.dart';
 import 'package:Pangolin/utils/widgets/conditionWidget.dart';
-import 'package:Pangolin/applications/files/main.dart';
-import 'package:Pangolin/desktop/quicksettings/quick_settings.dart';
-import 'package:flutter/material.dart';
 import 'package:Pangolin/utils/widgets/system_overlay.dart';
-import 'package:Pangolin/desktop/launcher/launcher_toggle.dart';
-import 'package:Pangolin/desktop/quicksettings/status_tray.dart';
-import 'package:Pangolin/desktop/launcher/launcher.dart';
-import 'package:provider/provider.dart';
-import 'package:Pangolin/utils/widgets/app_launcher.dart';
-import 'package:Pangolin/utils/others/functions.dart';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Desktop extends StatefulWidget {
-  Desktop({Key key, this.title}) : super(key: key);
-
-  final String title;
+  Desktop({Key? key}) : super(key: key);
 
   @override
   _DesktopState createState() => _DesktopState();
@@ -73,14 +70,16 @@ class _DesktopState extends State<Desktop> {
             builder: (Animation<double> animation) => Center(
               child: AnimatedBuilder(
                 animation: animation,
-                builder: (BuildContext context, Widget child) => FadeTransition(
-                  opacity: _overlayOpacityTween.animate(animation),
-                  child: SlideTransition(
-                    position: Tween(begin: Offset(0, 1), end: Offset(0, 0))
-                        .animate(animation),
-                    child: child,
-                  ),
-                ),
+                builder: (BuildContext context, Widget? child) {
+                  return FadeTransition(
+                    opacity: _overlayOpacityTween.animate(animation),
+                    child: SlideTransition(
+                      position: Tween(begin: Offset(0, 1), end: Offset(0, 0))
+                          .animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
                 child: Container(
                     padding: const EdgeInsets.all(0.0),
                     alignment: Alignment.center,
@@ -91,7 +90,7 @@ class _DesktopState extends State<Desktop> {
               ),
             ),
             callback: (bool visible) {
-              KeyRing.launcherToggleKey.currentState.toggled = visible;
+              KeyRing.launcherToggleKey.currentState?.toggled = visible;
             },
           ),
 
@@ -103,19 +102,21 @@ class _DesktopState extends State<Desktop> {
               bottom: 50.0,
               child: AnimatedBuilder(
                 animation: animation,
-                builder: (BuildContext context, Widget child) => FadeTransition(
-                  opacity: _overlayOpacityTween.animate(animation),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Blur(
-                      child: ScaleTransition(
-                        scale: _overlayScaleTween.animate(animation),
-                        alignment: FractionalOffset.bottomRight,
-                        child: child,
+                builder: (BuildContext context, Widget? child) {
+                  return FadeTransition(
+                    opacity: _overlayOpacityTween.animate(animation),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Blur(
+                        child: ScaleTransition(
+                          scale: _overlayScaleTween.animate(animation),
+                          alignment: FractionalOffset.bottomRight,
+                          child: child,
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: Blur(
@@ -127,7 +128,7 @@ class _DesktopState extends State<Desktop> {
                           width: 420,
                           height: 500,
                           decoration: BoxDecoration(
-                            color: Pangolin.settingsBox.get("desktopDarkMode")
+                            color: Pangolin.settingsBox?.get("desktopDarkMode")
                                 ? Colors.black.withOpacity(0.75)
                                 : Colors.white.withOpacity(0.5),
                           ),
@@ -140,7 +141,7 @@ class _DesktopState extends State<Desktop> {
               ),
             ),
             callback: (bool visible) {
-              KeyRing.statusToggleKey.currentState.toggled = visible;
+              KeyRing.statusToggleKey.currentState?.toggled = visible;
             },
           ),
 
@@ -157,7 +158,7 @@ class _DesktopState extends State<Desktop> {
                 child: Container(
                     //color: Color.fromARGB(150, 0, 0, 0),
                     decoration: BoxDecoration(
-                      color: Pangolin.settingsBox.get("desktopDarkMode")
+                      color: Pangolin.settingsBox?.get("desktopDarkMode")
                           ? Color.fromARGB(150, 0, 0, 0)
                           : Colors.white.withOpacity(0.75),
                       //uncomment below to add radius to the launcher panel
@@ -196,13 +197,13 @@ class _DesktopState extends State<Desktop> {
                                         app: TextEditorApp(),
                                         icon:
                                             'assets/images/icons/PNG/notes.png',
-                                        color: Colors.amber[700],
+                                        color: Colors.amber[700]!,
                                         callback: toggleCallback),
                                     AppLauncherButton(
                                         app: TerminalApp(),
                                         icon:
                                             'assets/images/icons/PNG/terminal.png',
-                                        color: Colors.grey[900],
+                                        color: Colors.grey[900]!,
                                         callback: toggleCallback),
                                     AppLauncherButton(
                                         app: Files(),
@@ -213,14 +214,14 @@ class _DesktopState extends State<Desktop> {
                                     AppLauncherButton(
                                       app: Tasks(),
                                       icon: 'assets/images/icons/PNG/task.png',
-                                      color: Colors.cyan[900],
+                                      color: Colors.cyan[900]!,
                                       callback: toggleCallback,
                                     ),
                                     AppLauncherButton(
                                         app: Settings(),
                                         icon:
                                             'assets/images/icons/PNG/settings.png',
-                                        color: Colors.deepOrange[700],
+                                        color: Colors.deepOrange[700]!,
                                         callback: toggleCallback),
                                   ]),
                             ],
@@ -260,30 +261,30 @@ class _DesktopState extends State<Desktop> {
                                 AppLauncherButton(
                                     app: TextEditorApp(),
                                     icon: 'assets/images/icons/PNG/notes.png',
-                                    color: Colors.amber[700],
+                                    color: Colors.amber[700]!,
                                     callback: toggleCallback),
                                 AppLauncherButton(
                                     app: TerminalApp(),
                                     icon:
                                         'assets/images/icons/PNG/terminal.png',
-                                    color: Colors.grey[900],
+                                    color: Colors.grey[900]!,
                                     callback: toggleCallback),
                                 AppLauncherButton(
                                     app: Files(),
                                     icon: 'assets/images/icons/PNG/files.png',
-                                    color: Colors.deepOrange[800],
+                                    color: Colors.deepOrange[800]!,
                                     callback: toggleCallback),
                                 AppLauncherButton(
                                   app: Tasks(),
                                   icon: 'assets/images/icons/PNG/task.png',
-                                  color: Colors.cyan[900],
+                                  color: Colors.cyan[900]!,
                                   callback: toggleCallback,
                                 ),
                                 AppLauncherButton(
                                     app: Settings(),
                                     icon:
                                         'assets/images/icons/PNG/settings.png',
-                                    color: Colors.deepOrange[700],
+                                    color: Colors.deepOrange[700]!,
                                     callback: toggleCallback),
                               ]),
                           Padding(

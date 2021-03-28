@@ -14,8 +14,8 @@ limitations under the License.
 import 'dart:ui';
 
 import 'package:Pangolin/internal/locales/locales.g.dart';
-import 'package:Pangolin/utils/hiveManager.dart';
 import 'package:Pangolin/main.dart';
+import 'package:Pangolin/utils/hiveManager.dart';
 import 'package:Pangolin/utils/widgets/conditionWidget.dart';
 import 'package:Pangolin/utils/widgets/settingsTile.dart';
 import 'package:Pangolin/utils/widgets/settingsheader.dart';
@@ -31,9 +31,9 @@ class GeneralManagement extends StatefulWidget {
 
 class _GeneralManagementState extends State<GeneralManagement> {
   List<Locale> localesLanguages = Locales.supported;
-  String showLanguage(value) {
+  String? showLanguage(value) {
     final local = value.replaceAll("_", "-");
-    return Locales.data['$local']['pangolin.qs_changelanguage'];
+    return Locales.data['$local']!['pangolin.qs_changelanguage'];
   }
 
   @override
@@ -77,7 +77,7 @@ class _GeneralManagementState extends State<GeneralManagement> {
                             items: localesLanguages.map((value) {
                               return DropdownMenuItem<String>(
                                 value: '$value',
-                                child: Text(showLanguage('$value')),
+                                child: Text(showLanguage('$value')!),
                               );
                             }).toList(),
                             onChanged: (_) {
@@ -363,7 +363,7 @@ void _setTimezone(String _selected, BuildContext context) {
       Pangolin.settingsBox.put("timeZoneName", "Polski - Polska");
       break;
     case "Português - Brasil":
-      EasyLocalization.of(context).locale = Locale("pt", "BR");
+      EasyLocalization.of(context)!.locale = Locale("pt", "BR");
       Pangolin.settingsBox.put("timeZone", "pt_BR");
       Pangolin.settingsBox.put("timeZoneName", "Português - Brasil");
       break;

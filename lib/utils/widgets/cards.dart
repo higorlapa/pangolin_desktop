@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import 'package:Pangolin/utils/hiveManager.dart';
 import 'package:Pangolin/main.dart';
 import 'package:flutter/material.dart';
 
@@ -87,7 +86,7 @@ Card buildCard(IconData icon, String title, Color color, Color splash,
                         text,
                         style: new TextStyle(
                             fontSize: 15.0,
-                            color: Pangolin.settingsBox.get("darkMode")
+                            color: Pangolin.settingsBox?.get("darkMode")
                                 ? Colors.white
                                 : Colors.black,
                             fontWeight: FontWeight.w400,

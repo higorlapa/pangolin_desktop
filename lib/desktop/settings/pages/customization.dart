@@ -19,9 +19,9 @@ import 'package:Pangolin/utils/themes/customization_manager.dart';
 import 'package:Pangolin/utils/widgets/conditionWidget.dart';
 import 'package:Pangolin/utils/widgets/settingsTile.dart';
 import 'package:Pangolin/utils/widgets/settingsheader.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Customization extends StatefulWidget {
   static int selectedWallpaper = HiveManager.get("wallpaper");
@@ -74,52 +74,52 @@ class _CustomizationState extends State<Customization> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   buildAcctenColorButton(
-                                      Colors.deepOrangeAccent[400], () {
+                                      Colors.deepOrangeAccent[400]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.deepOrangeAccent[400]);
+                                          Colors.deepOrangeAccent[400]!);
                                     });
                                   }, "Orange"),
-                                  buildAcctenColorButton(Colors.redAccent[700],
+                                  buildAcctenColorButton(Colors.redAccent[700]!,
                                       () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.redAccent[700]);
+                                          Colors.redAccent[700]!);
                                     });
                                   }, "Red"),
                                   buildAcctenColorButton(
-                                      Colors.greenAccent[700], () {
+                                      Colors.greenAccent[700]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.greenAccent[700]);
+                                          Colors.greenAccent[700]!);
                                     });
                                   }, "Green"),
-                                  buildAcctenColorButton(Colors.blueAccent[700],
-                                      () {
+                                  buildAcctenColorButton(
+                                      Colors.blueAccent[700]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.blueAccent[700]);
+                                          Colors.blueAccent[700]!);
                                     });
                                   }, "Blue"),
                                   buildAcctenColorButton(
-                                      Colors.purpleAccent[700], () {
+                                      Colors.purpleAccent[700]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.purpleAccent[700]);
+                                          Colors.purpleAccent[700]!);
                                     });
                                   }, "Purple"),
-                                  buildAcctenColorButton(Colors.cyanAccent[700],
-                                      () {
+                                  buildAcctenColorButton(
+                                      Colors.cyanAccent[700]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.cyanAccent[700]);
+                                          Colors.cyanAccent[700]!);
                                     });
                                   }, "Cyan"),
                                   buildAcctenColorButton(
-                                      Colors.amberAccent[700], () {
+                                      Colors.amberAccent[700]!, () {
                                     setState(() {
                                       notifier.changeThemeColor(
-                                          Colors.amberAccent[700]);
+                                          Colors.amberAccent[700]!);
                                     });
                                   }, "Amber"),
                                   buildAcctenColorButton(
@@ -431,7 +431,7 @@ class _CustomizationState extends State<Customization> {
   Color currentColor = Color(0xff443a49);
 
   GestureDetector buildAcctenColorButton(
-      Color color, Function onTap, String name) {
+      Color color, Function() onTap, String name) {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
@@ -463,7 +463,7 @@ class _CustomizationState extends State<Customization> {
 
 class WallpaperChooser extends StatefulWidget {
   const WallpaperChooser({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

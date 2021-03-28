@@ -9,10 +9,13 @@ import 'animated_content_builder.dart';
 /// Base class for UI elements behaving as toggles.
 class Toggle extends StatefulWidget {
   final AnimatedContentBuilder _builder;
-  final ValueChanged<bool> _callback;
+  final ValueChanged<bool>? _callback;
 
   /// Constructor.
-  Toggle({Key key, AnimatedContentBuilder builder, ValueChanged<bool> callback})
+  Toggle(
+      {Key? key,
+      required AnimatedContentBuilder builder,
+      ValueChanged<bool>? callback})
       : _builder = builder,
         _callback = callback,
         super(key: key);
@@ -25,8 +28,8 @@ class Toggle extends StatefulWidget {
 class ToggleState extends State<Toggle> with TickerProviderStateMixin {
   bool _toggled = false;
 
-  AnimationController _controller;
-  Animation<double> _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {

@@ -17,8 +17,8 @@ import 'package:provider/provider.dart';
 
 class SettingsTile extends StatelessWidget {
   final List<Widget> children;
-  final EdgeInsetsGeometry margin;
-  const SettingsTile({Key key, @required this.children, this.margin})
+  final EdgeInsetsGeometry? margin;
+  const SettingsTile({Key? key, required this.children, this.margin})
       : super(key: key);
 
   @override

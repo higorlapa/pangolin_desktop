@@ -16,6 +16,7 @@ limitations under the License.
 
 import 'package:Pangolin/utils/widgets/hover.dart';
 import 'package:flutter/material.dart';
+
 import 'model.dart';
 
 /// Signature of window interaction callbacks.
@@ -30,10 +31,10 @@ class Window extends StatefulWidget {
   final Size initialSize;
 
   /// Called when the user started interacting with this window.
-  final WindowInteractionCallback onWindowInteraction;
+  final WindowInteractionCallback? onWindowInteraction;
 
   /// Called when the user clicks close button in this window.
-  final WindowInteractionCallback onWindowClose;
+  final WindowInteractionCallback? onWindowClose;
 
   /// The window's child.
   final dynamic child;
@@ -42,38 +43,54 @@ class Window extends StatefulWidget {
   final Color color;
 
   /// The window's custom bar, if there is one.
-  Widget customBar;
+  final Widget? customBar;
 
   /// Constructor.
   Window({
-    Key key,
+    Key? key,
     this.onWindowInteraction,
     this.onWindowClose,
     this.initialPosition: Offset.zero,
     this.initialSize: Size.zero,
-    @required this.child,
+    required this.child,
     this.color: Colors.blueAccent,
+    this.customBar,
   }) : super(key: key);
 
   @override
   WindowState createState() => WindowState();
 }
 
+typedef CustomBarBuilder = Widget Function(
+    {
+
+    /// The function called to close the window.
+    Function close,
+
+    /// The function called to minimize the window.
+    Function minimize,
+
+    /// The function called to maximize or restore the window.
+    Function maximize,
+
+    /// The getter to determine whether or not the window is maximized.
+    bool Function() maximizeState});
+
 /// The window's mode.
 enum WindowMode { NORMAL_MODE, MAXIMIZE_MODE, MINIMIZE_MODE }
 
 class WindowState extends State<Window> {
   /// The window's position.
-  Offset _position;
+  late Offset _position;
 
   /// The window's position before maximizing.
-  Offset _prePosition;
+  Offset? _prePosition;
 
   /// The window's size.
-  Size _size;
+  late Size _size;
 
   /// The window's size before maximizing.
-  Size _preSize;
+  Size? _preSize;
 
   /// The windows's current mode.
   WindowMode _windowMode = WindowMode.NORMAL_MODE;
@@ -82,7 +99,7 @@ class WindowState extends State<Window> {
   dynamic _child;
 
   /// The window's color.
-  Color _color;
+  late Color _color;
 
   /// The window's minimum height.
   final double _minHeight = 300.0;
@@ -94,7 +111,7 @@ class WindowState extends State<Window> {
   final FocusNode _focusNode = new FocusNode();
 
   /// Control is an illusion so let's make it a big one
-  FocusAttachment _focusAttachment;
+  late FocusAttachment _focusAttachment;
 
   static bool isMaximized = false;
 
@@ -187,8 +204,8 @@ class WindowState extends State<Window> {
     setState(() {
       isMaximized = false;
       _windowMode = WindowMode.NORMAL_MODE;
-      _size = _preSize;
-      _position = _prePosition;
+      _size = _preSize ?? _size;
+      _position = _prePosition ?? _position;
     });
   }
 
@@ -198,7 +215,7 @@ class WindowState extends State<Window> {
       isMaximized = false;
       _windowMode = WindowMode.NORMAL_MODE;
       _size = Size(deviceSize.width / 2, deviceSize.height / 2);
-      _position = _prePosition;
+      _position = _prePosition ?? _position;
     });
   }
 
@@ -206,8 +223,8 @@ class WindowState extends State<Window> {
     setState(() {
       isMaximized = false;
       _windowMode = WindowMode.NORMAL_MODE;
-      _size = _preSize;
-      _position = _prePosition;
+      _size = _preSize ?? _size;
+      _position = _prePosition ?? _position;
     });
   }
 
@@ -220,171 +237,154 @@ class WindowState extends State<Window> {
   bool hoverLeftRight = false;
   bool hoverTest = false;
   bool hoverUpDown = false;
-
+  CustomBarBuilder? _customBarBuilder;
   @override
-  Widget build(BuildContext context) =>
-      ScopedModelDescendant<WindowData>(builder: (
-        BuildContext context,
-        Widget child,
-        WindowData model,
-      ) {
-        // Make sure the focus tree is properly updated.
-        _focusAttachment.reparent();
-        /*if (model.tabs.length == 1 && model.tabs[0].id == _draggedTabId) {
+  Widget build(BuildContext context) {
+    return ScopedModelDescendant<WindowData>(builder: (
+      BuildContext context,
+      Widget? child,
+      WindowData model,
+    ) {
+      // Make sure the focus tree is properly updated.
+      _focusAttachment.reparent();
+      /*if (model.tabs.length == 1 && model.tabs[0].id == _draggedTabId) {
           // If the lone tab is being dragged, hide this window.
           return new Container();
         }
         final TabData selectedTab = _getCurrentSelection(model);*/
-        Widget Function(
-            {
 
-            /// The function called to close the window.
-            Function close,
-
-            /// The function called to minimize the window.
-            Function minimize,
-
-            /// The function called to maximize or restore the window.
-            Function maximize,
-
-            /// The getter to determine whether or not the window is maximized.
-            bool Function() maximizeState}) customBar;
-        try {
-          customBar = widget.child.customBar;
-          widget.customBar = widget.child.customBar;
-        } catch (e) {}
-        try {
-          setState(() {
-            _color = widget.child.customBackground;
-          });
-        } catch (e) {}
-        return Positioned(
-          left: _position.dx,
-          top: _position.dy,
-          child: GestureDetector(
-            onTapDown: (_) => _registerInteraction(),
-            child:
-                /*new RawKeyboardListener(
+      try {
+        _customBarBuilder = widget.child.customBar;
+      } catch (e) {}
+      try {
+        setState(() {
+          _color = widget.child.customBackground;
+        });
+      } catch (e) {}
+      return Positioned(
+        left: _position.dx,
+        top: _position.dy,
+        child: GestureDetector(
+          onTapDown: (_) => _registerInteraction(),
+          child:
+              /*new RawKeyboardListener(
         focusNode: _focusNode,
         onKey: (RawKeyEvent event) =>
         _handleKeyEvent(event, model, selectedTab.id),
         child: new*/
-                //check to see if there's a customBar property in the passed app class
-                RepaintBoundary(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  GestureDetector(
-                    onPanUpdate: (DragUpdateDetails details) {
-                      setState(() {
-                        var _newSize = _size + details.delta;
-                        if (_newSize.width >= _minWidth &&
-                            _newSize.height >= _minHeight)
-                          _size += details.delta;
-                      });
-                    },
-                    child: Hover(
-                      opacity: 0.8,
-                      child: Container(
-                        width: (_windowMode == WindowMode.MAXIMIZE_MODE)
-                            ? _size.width
-                            : _size.width + 20,
-                        height: (_windowMode == WindowMode.MAXIMIZE_MODE)
-                            ? _size.height
-                            : _size.height + 20,
-                        //color: Colors.blueAccent,
+              //check to see if there's a customBar property in the passed app class
+              RepaintBoundary(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                GestureDetector(
+                  onPanUpdate: (DragUpdateDetails details) {
+                    setState(() {
+                      var _newSize = _size + details.delta;
+                      if (_newSize.width >= _minWidth &&
+                          _newSize.height >= _minHeight) _size += details.delta;
+                    });
+                  },
+                  child: Hover(
+                    opacity: 0.8,
+                    child: Container(
+                      width: (_windowMode == WindowMode.MAXIMIZE_MODE)
+                          ? _size.width
+                          : _size.width + 20,
+                      height: (_windowMode == WindowMode.MAXIMIZE_MODE)
+                          ? _size.height
+                          : _size.height + 20,
+                      //color: Colors.blueAccent,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: _size.width,
+                  height: _size.height,
+                  constraints: BoxConstraints(
+                      minWidth: _minWidth, minHeight: _minHeight), //
+                  decoration: BoxDecoration(boxShadow: kElevationToShadow[12]),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onPanUpdate: (DragUpdateDetails details) {
+                          setState(() {
+                            _position += details.delta;
+                            if (_windowMode == WindowMode.MAXIMIZE_MODE) {
+                              _windowMode = WindowMode.NORMAL_MODE;
+                              _size = _preSize ?? _size;
+                            }
+                          });
+                        },
+                        onDoubleTap: () {
+                          _windowMode == WindowMode.NORMAL_MODE
+                              ? _maximizeWindow()
+                              : _restoreWindowFromMaximizeMode();
+                        },
+                        child: _customBarBuilder != null
+                            ? _customBarBuilder!(
+                                close: _closeWindow,
+                                maximize: () =>
+                                    _windowMode == WindowMode.NORMAL_MODE
+                                        ? _maximizeWindow()
+                                        : _restoreWindowFromMaximizeMode(),
+                                minimize: () => null, // for now
+                                maximizeState: () =>
+                                    _windowMode == WindowMode.MAXIMIZE_MODE
+                                        ? true
+                                        : false)
+                            : Container(
+                                decoration: BoxDecoration(
+                                  color: _color,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular((_windowMode ==
+                                              WindowMode.MAXIMIZE_MODE)
+                                          ? 0
+                                          : 5),
+                                      topRight: Radius.circular((_windowMode ==
+                                              WindowMode.MAXIMIZE_MODE)
+                                          ? 0
+                                          : 5)),
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                height: 35.0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    minimizeButton(),
+                                    SizedBox(width: 3.0),
+                                    maximizeButton(),
+                                    SizedBox(width: 3.0),
+                                    closeButton()
+                                  ],
+                                )),
                       ),
-                    ),
-                  ),
-                  Container(
-                    width: _size.width,
-                    height: _size.height,
-                    constraints: BoxConstraints(
-                        minWidth: _minWidth, minHeight: _minHeight), //
-                    decoration:
-                        BoxDecoration(boxShadow: kElevationToShadow[12]),
-                    child: Column(
-                      children: [
-                        GestureDetector(
-                          onPanUpdate: (DragUpdateDetails details) {
-                            setState(() {
-                              _position += details.delta;
-                              if (_windowMode == WindowMode.MAXIMIZE_MODE) {
-                                _windowMode = WindowMode.NORMAL_MODE;
-                                _size = _preSize;
-                              }
-                            });
-                          },
-                          onDoubleTap: () {
-                            _windowMode == WindowMode.NORMAL_MODE
-                                ? _maximizeWindow()
-                                : _restoreWindowFromMaximizeMode();
-                          },
-                          child: customBar != null
-                              ? customBar(
-                                  close: _closeWindow,
-                                  maximize: () =>
-                                      _windowMode == WindowMode.NORMAL_MODE
-                                          ? _maximizeWindow()
-                                          : _restoreWindowFromMaximizeMode(),
-                                  minimize: () => null, // for now
-                                  maximizeState: () =>
-                                      _windowMode == WindowMode.MAXIMIZE_MODE
-                                          ? true
-                                          : false)
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    color: _color,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular((_windowMode ==
-                                                WindowMode.MAXIMIZE_MODE)
-                                            ? 0
-                                            : 5),
-                                        topRight: Radius.circular(
-                                            (_windowMode ==
-                                                    WindowMode.MAXIMIZE_MODE)
-                                                ? 0
-                                                : 5)),
-                                  ),
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 4.0),
-                                  height: 35.0,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      minimizeButton(),
-                                      SizedBox(width: 3.0),
-                                      maximizeButton(),
-                                      SizedBox(width: 3.0),
-                                      closeButton()
-                                    ],
-                                  )),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(
+                                  (_windowMode == WindowMode.MAXIMIZE_MODE)
+                                      ? 0
+                                      : 5),
+                              bottomRight: Radius.circular(
+                                  (_windowMode == WindowMode.MAXIMIZE_MODE)
+                                      ? 0
+                                      : 5)),
+                          child: (_child is Widget)
+                              ? _child
+                              : Text("ERROR: Window is not a Widget!"),
                         ),
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(
-                                    (_windowMode == WindowMode.MAXIMIZE_MODE)
-                                        ? 0
-                                        : 5),
-                                bottomRight: Radius.circular(
-                                    (_windowMode == WindowMode.MAXIMIZE_MODE)
-                                        ? 0
-                                        : 5)),
-                            child: (_child is Widget)
-                                ? _child
-                                : Text("ERROR: Window is not a Widget!"),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        );
-      });
+        ),
+      );
+    });
+  }
 
   GlobalKey _maximizeKey = GlobalKey();
 
@@ -408,8 +408,8 @@ class WindowState extends State<Window> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               color: hoverClose
-                  ? Colors.grey[800].withOpacity(0.3)
-                  : Colors.grey[800].withOpacity(0.0),
+                  ? Colors.grey[800]!.withOpacity(0.3)
+                  : Colors.grey[800]!.withOpacity(0.0),
             ),
             child: Icon(Icons.close, color: Colors.white, size: 20)),
       ),
@@ -450,7 +450,7 @@ class WindowState extends State<Window> {
               _dockWindowRight();
               break;
           }
-          _overlayEntry.remove();
+          _overlayEntry?.remove();
         },
         child: Container(
             key: _maximizeKey,
@@ -459,8 +459,8 @@ class WindowState extends State<Window> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               color: hoverMaximize
-                  ? Colors.grey[800].withOpacity(0.3)
-                  : Colors.grey[800].withOpacity(0.0),
+                  ? Colors.grey[800]!.withOpacity(0.3)
+                  : Colors.grey[800]!.withOpacity(0.0),
             ),
             child:
                 Icon(Icons.crop_square_sharp, color: Colors.white, size: 20)),
@@ -468,7 +468,7 @@ class WindowState extends State<Window> {
     );
   }
 
-  Offset oldPosition;
+  Offset? oldPosition;
 
   MouseRegion minimizeButton() {
     return MouseRegion(
@@ -486,7 +486,7 @@ class WindowState extends State<Window> {
         onTap: () {
           setState(() {
             oldPosition = _position;
-            _position = Offset(oldPosition.dx, 5000);
+            _position = Offset(oldPosition?.dx ?? 0.0, 5000);
           });
         },
         child: Container(
@@ -495,19 +495,19 @@ class WindowState extends State<Window> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               color: hoverUpDown
-                  ? Colors.grey[800].withOpacity(0.3)
-                  : Colors.grey[800].withOpacity(0.0),
+                  ? Colors.grey[800]!.withOpacity(0.3)
+                  : Colors.grey[800]!.withOpacity(0.0),
             ),
             child: Icon(Icons.minimize, color: Colors.white, size: 20)),
       ),
     );
   }
 
-  String _tilingMode;
+  String? _tilingMode;
 
-  OverlayEntry _overlayEntry;
+  OverlayEntry? _overlayEntry;
   showOverlay(BuildContext context) async {
-    OverlayState overlayState = Overlay.of(context);
+    OverlayState overlayState = Overlay.of(context)!;
     _overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
               child: Center(
@@ -613,20 +613,20 @@ class WindowState extends State<Window> {
               left: getPositionX() - 40,
             ));
 
-    overlayState.insert(_overlayEntry);
+    overlayState.insert(_overlayEntry!);
   }
 
   getPositionX() {
-    final RenderBox renderBoxButton =
-        _maximizeKey.currentContext.findRenderObject();
-    final buttonPosition = renderBoxButton.localToGlobal(Offset.zero);
-    return buttonPosition.dx;
+    final renderBoxButton =
+        _maximizeKey.currentContext?.findRenderObject() as RenderBox?;
+    final buttonPosition = renderBoxButton?.localToGlobal(Offset.zero);
+    return buttonPosition?.dx ?? 0.0;
   }
 
   getPositionY() {
-    final RenderBox renderBoxButton =
-        _maximizeKey.currentContext.findRenderObject();
-    final buttonPosition = renderBoxButton.localToGlobal(Offset.zero);
-    return buttonPosition.dy;
+    final RenderBox? renderBoxButton =
+        _maximizeKey.currentContext?.findRenderObject() as RenderBox?;
+    final buttonPosition = renderBoxButton?.localToGlobal(Offset.zero);
+    return buttonPosition?.dy ?? 0.0;
   }
 }

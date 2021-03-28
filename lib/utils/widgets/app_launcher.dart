@@ -15,13 +15,14 @@ limitations under the License.
 */
 
 import 'dart:ui';
+
 import 'package:Pangolin/desktop/window/model.dart';
+import 'package:Pangolin/main.dart';
 import 'package:Pangolin/utils/hiveManager.dart';
 import 'package:Pangolin/utils/widgets/hover.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
-import 'package:Pangolin/main.dart';
+import 'package:provider/provider.dart';
 
 class AppLauncherButton extends StatefulWidget {
   final Widget app;
@@ -30,21 +31,21 @@ class AppLauncherButton extends StatefulWidget {
   final bool customBar;
   final double childHeight;
   final double childWidth;
-  final String label;
+  final String? label;
   final AppLauncherButtonType type;
   final Color color;
   final ValueChanged<bool> _callback;
 
   AppLauncherButton(
-      {@required this.app,
-      @required this.icon,
+      {required this.app,
+      required this.icon,
       this.label,
       this.type = AppLauncherButtonType.TaskBar,
       this.appExists = true,
       this.customBar = true,
       this.childHeight = 64.0,
       this.childWidth = 64.0,
-      @required this.color,
+      required this.color,
       callback})
       : _callback =
             callback; //This alien syntax must be syntactical glucose for a setter. Neato.
@@ -99,7 +100,7 @@ class AppLauncherButtonState extends State<AppLauncherButton> {
                                     child: widget.app,
                                     color: HiveManager.get("coloredTitlebar")
                                         ? widget.color
-                                        : Colors.grey[900])
+                                        : Colors.grey[900]!)
                             : showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -144,15 +145,15 @@ class AppLauncherButtonState extends State<AppLauncherButton> {
                       ? Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            widget.label,
+                            widget.label ?? "",
                             style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w400,
                               color: widget.appExists
-                                  ? Pangolin.settingsBox.get("desktopDarkMode")
+                                  ? Pangolin.settingsBox?.get("desktopDarkMode")
                                       ? Colors.white
                                       : Colors.black
-                                  : Pangolin.settingsBox.get("desktopDarkMode")
+                                  : Pangolin.settingsBox?.get("desktopDarkMode")
                                       ? Colors.grey[400]
                                       : Colors.grey[700],
                             ),

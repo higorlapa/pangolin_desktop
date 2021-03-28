@@ -11,11 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import 'package:Pangolin/desktop/settings/pages/backup.dart';
+import 'dart:ui';
+
 import 'package:Pangolin/desktop/settings/pages/about.dart';
 import 'package:Pangolin/desktop/settings/pages/accounts.dart';
 import 'package:Pangolin/desktop/settings/pages/advfeatures.dart';
 import 'package:Pangolin/desktop/settings/pages/applications.dart';
+import 'package:Pangolin/desktop/settings/pages/backup.dart';
 import 'package:Pangolin/desktop/settings/pages/connections.dart';
 import 'package:Pangolin/desktop/settings/pages/customization.dart';
 import 'package:Pangolin/desktop/settings/pages/display.dart';
@@ -28,7 +30,6 @@ import 'package:Pangolin/utils/themes/customization_manager.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui';
 
 import '../../utils/hiveManager.dart';
 
@@ -150,7 +151,7 @@ class Settings extends StatelessWidget {
 }
 
 Widget buildSettings(
-    IconData icon, String title, Color color, context, Function onTap) {
+    IconData icon, String title, Color color, context, Function() onTap) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -201,7 +202,7 @@ Container buildSettingsHeader(String title) {
 class SettingsPage extends StatefulWidget {
   final String title;
 
-  SettingsPage({Key key, this.title}) : super(key: key);
+  SettingsPage({Key? key, required this.title}) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -316,7 +317,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                 color: Theme.of(
                                                                         context)
                                                                     .textTheme
-                                                                    .bodyText1
+                                                                    .bodyText1!
                                                                     .color,
                                                                 fontSize: 15,
                                                               ),
@@ -505,7 +506,7 @@ class _SearchState extends State<Search> {
                           decoration: InputDecoration(
                             hintStyle: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyText1.color,
+                                  Theme.of(context).textTheme.bodyText1!.color,
                               fontSize: 15,
                             ),
                             icon: Icon(

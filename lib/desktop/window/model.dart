@@ -18,7 +18,6 @@ limitations under the License.
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 
 /*/// Signature of tab ownership change callbacks.
@@ -62,7 +61,7 @@ class WindowData extends Model {
   /// The window's id.
   final WindowId id;
   final Widget child;
-  final Color color;
+  final Color? color;
   /*/// The tabs hosted by the window.
   final List<TabData> tabs;
 
@@ -70,7 +69,7 @@ class WindowData extends Model {
   final ClaimTabCallback claimTab;*/
 
   /// Constructor.
-  WindowData({this.color, @required this.child}) : id = new WindowId();
+  WindowData({this.color, required this.child}) : id = new WindowId();
 
   /*/// Returns true if this window contains the given tab.
   bool has(TabId id) => tabs.any((TabData tab) => tab.id == id);
@@ -109,7 +108,7 @@ class WindowData extends Model {
 
   /// Returns the tab adjacent to [id] in the list in the direction specified by
   /// [forward].
-  TabId next({@required TabId id, @required bool forward}) {
+  TabId next({required TabId id, required bool forward}) {
     final int index = new List<int>.generate(tabs.length, (int x) => x)
         .firstWhere((int i) => tabs[i].id == id, orElse: () => -1);
     if (index == -1) {
@@ -123,7 +122,7 @@ class WindowData extends Model {
 /// A collection of windows.
 class WindowsData extends Model with ChangeNotifier {
   /// The actual windows.
-  final List<WindowData> windows = new List<WindowData>();
+  final List<WindowData> windows = <WindowData>[];
 
   /*/// Called by a window to claim a tab owned by another window.
   TabData _claimTab(TabId id) {
@@ -143,7 +142,7 @@ class WindowsData extends Model with ChangeNotifier {
   }*/
 
   /// Adds a new window, with an optional existing tab.
-  void add({Widget child, Color color}) {
+  void add({Widget? child, Color? color}) {
     //final TabData tab = id != null ? _claimTab(id) : null;
     windows.add(new WindowData(
       child: child != null ? child : Container(color: Colors.deepPurple[200]),
@@ -180,14 +179,12 @@ class WindowsData extends Model with ChangeNotifier {
 
   /// Returns the data for the [id] window, or the result of calling [orElse],
   /// or [null].
-  WindowData find(WindowId id, {WindowData orElse()}) => windows.firstWhere(
-        (WindowData window) => window.id == id,
-        orElse: orElse ?? () => null,
-      );
+  WindowData find(WindowId id) =>
+      windows.firstWhere((WindowData window) => window.id == id);
 
   /// Returns the window adjacent to [id] in the list in the direction specified
   /// by [forward].
-  WindowId next({@required WindowId id, @required bool forward}) {
+  WindowId? next({required WindowId id, required bool forward}) {
     final int index = new List<int>.generate(windows.length, (int x) => x)
         .firstWhere((int i) => windows[i].id == id, orElse: () => -1);
     if (index == -1) {
@@ -241,10 +238,12 @@ class ModelFinder<T extends Model> {
   ///
   /// [Widget]s who call [of] with a [rebuildOnChange] of true will be rebuilt
   /// whenever there's a change to the returned model.
-  T of(BuildContext context, {bool rebuildOnChange: false}) {
-    Widget widget = rebuildOnChange
+  T? of(BuildContext context, {bool rebuildOnChange: false}) {
+    Widget widget = (rebuildOnChange
         ? context.dependOnInheritedWidgetOfExactType<_InheritedModel<T>>()
-        : context.getElementForInheritedWidgetOfExactType<_InheritedModel<T>>()?.widget;
+        : context
+            .getElementForInheritedWidgetOfExactType<_InheritedModel<T>>()
+            ?.widget)!;
     return (widget is _InheritedModel<T>) ? widget.model : null;
   }
 }
@@ -259,7 +258,7 @@ class ScopedModel<T extends Model> extends StatelessWidget {
   final Widget child;
 
   /// Constructor.
-  ScopedModel({this.model, this.child});
+  ScopedModel({required this.model, required this.child});
 
   @override
   Widget build(BuildContext context) => new _ModelListener(
@@ -276,7 +275,7 @@ class _ModelListener extends StatefulWidget {
   final Model model;
   final WidgetBuilder builder;
 
-  _ModelListener({this.model, this.builder});
+  _ModelListener({required this.model, required this.builder});
 
   @override
   _ModelListenerState createState() => new _ModelListenerState();
@@ -317,15 +316,10 @@ class _ModelListenerState extends State<_ModelListener> {
 class _InheritedModel<T extends Model> extends InheritedWidget {
   final T model;
   final int version;
-  _InheritedModel({Key key, Widget child, T model})
+  _InheritedModel({Key? key, required Widget child, required T model})
       : this.model = model,
         this.version = model._version,
         super(key: key, child: child);
-
-  /// Used to return the runtime type.
-  _InheritedModel.forRuntimeType()
-      : this.model = null,
-        this.version = 0;
 
   @override
   bool updateShouldNotify(_InheritedModel<T> oldWidget) =>
@@ -335,7 +329,7 @@ class _InheritedModel<T extends Model> extends InheritedWidget {
 /// Builds a child for a [ScopedModelDescendant].
 typedef Widget ScopedModelDescendantBuilder<T extends Model>(
   BuildContext context,
-  Widget child,
+  Widget? child,
   T model,
 );
 
@@ -347,15 +341,15 @@ class ScopedModelDescendant<T extends Model> extends StatelessWidget {
 
   /// An optional constant child that depends on the model.  This will be passed
   /// as the child of [builder].
-  final Widget child;
+  final Widget? child;
 
   /// Constructor.
-  ScopedModelDescendant({this.builder, this.child});
+  ScopedModelDescendant({required this.builder, this.child});
 
   @override
   Widget build(BuildContext context) => builder(
         context,
         child,
-        new ModelFinder<T>().of(context, rebuildOnChange: true),
+        ModelFinder<T>().of(context, rebuildOnChange: true)!,
       );
 }

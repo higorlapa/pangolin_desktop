@@ -23,10 +23,11 @@ import 'package:flutter/widgets.dart';
 ///
 /// Using this reduces memory consumption & is performant with complexity O(1).
 class Constants extends InheritedWidget {
-  static Constants of(BuildContext context) =>
+  static Constants? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType(aspect: Constants);
 
-  const Constants({Widget child, Key key}) : super(key: key, child: child);
+  const Constants({required Widget child, Key? key})
+      : super(key: key, child: child);
   final String constantStringExample = 'An example';
 
   @override
